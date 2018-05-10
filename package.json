@@ -1,0 +1,41 @@
+{
+  "name": "ng-nedb",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/olitvin/ng-nedb.git"
+  },
+  "author": [
+    {
+      "name": "Oleg Litvin",
+      "email": "olitvin@zuzex.com"
+    }
+  ],
+  "scripts": {
+    "start": "grunt",
+    "test": "grunt test"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "devDependencies": {
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-karma": "latest",
+    "grunt-ng-annotate": "^3.0.0",
+    "grunt-open": "^0.2.3",
+    "grunt-shell": "^2.1.0",
+    "karma-jasmine": "latest",
+    "load-grunt-tasks": "*",
+    "time-grunt": "*"
+  },
+  "dependencies": {
+    "grunt": "^1.0.2",
+    "nedb": "^1.6.0"
+  }
+}
