@@ -1,23 +1,23 @@
 {
-    "name": "ng-nedb",
-    "version": "0.0.1",
-    "authors": [
-        "Oleg Litvin <olitvin@zuzex.com>"
-    ],
-    "main": "ng-nedb.min.js",
-    "moduleType": [
-        "amd"
-    ],
-    "license": "MIT",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ],
-    "dependencies": {
-        "nedb": "^1.6.0"
-    },
-    "description": "module for use nedb library"
+  "name": "ng-nedb",
+  "version": "0.0.3",
+  "authors": [
+    "Oleg Litvin <olitvin@zuzex.com>"
+  ],
+  "main": "ng-nedb.min.js",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "nedb": "olitvin/nedb#v1.7.1"
+  },
+  "description": "module for use nedb library"
 }

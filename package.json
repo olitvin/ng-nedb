@@ -1,6 +1,6 @@
 {
   "name": "ng-nedb",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/olitvin/ng-nedb.git"
@@ -32,10 +32,10 @@
     "grunt-shell": "^2.1.0",
     "karma-jasmine": "latest",
     "load-grunt-tasks": "*",
-    "time-grunt": "*"
+    "time-grunt": "*",
+    "grunt": "^1.0.2"
   },
   "dependencies": {
-    "grunt": "^1.0.2",
-    "nedb": "^1.6.0"
+    "nedb": "github:olitvin/nedb#v1.7.1"
   }
 }
