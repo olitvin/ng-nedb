@@ -4,7 +4,7 @@
   "authors": [
     "Oleg Litvin <olitvin@zuzex.com>"
   ],
-  "main": "ng-nedb.min.js",
+  "main": "ng-nedb.js",
   "moduleType": [
     "amd"
   ],
