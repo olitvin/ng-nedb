@@ -4279,6 +4279,33 @@
             localforage.getItem(filename, function(err, contents) {
                 if (noSerialize) {
                     contents = contents || [];
+                    if (contents.length && options && options.indexes) {
+                        var keys = Object.keys(options.indexes);
+                        var values = {};
+                        toAppend.forEach(function(val) {
+                            keys.forEach(function(key) {
+                                if (!values[key]) {
+                                    values[key] = [];
+                                }
+                                values[key].push(val[key]);
+                            });
+                        });
+                        contents = contents.filter(function(value) {
+                            if (!value) {
+                                return false;
+                            }
+                            var detected = false;
+                            keys.some(function(key) {
+                                if (values[key].indexOf(value[key]) != -1) {
+                                    detected = true;
+                                    return true;
+                                }
+                            });
+                            if (!detected) {
+                                return true;
+                            }
+                        });
+                    }
                     contents = contents.concat(toAppend);
                 } else {
                     contents = contents || "";
@@ -6066,7 +6093,10 @@
                 if (toPersist.length === 0) {
                     return callback(null);
                 }
-                storage.appendFile(self.filename, toPersist, "utf8", function(err) {
+                storage.appendFile(self.filename, toPersist, {
+                    indexes: this.db.indexes,
+                    encode: "utf8"
+                }, function(err) {
                     return callback(err);
                 });
             };
