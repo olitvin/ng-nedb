@@ -1,6 +1,6 @@
 {
   "name": "ng-nedb",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/olitvin/ng-nedb.git"
@@ -36,6 +36,6 @@
     "grunt": "^1.0.2"
   },
   "dependencies": {
-    "nedb": "github:olitvin/nedb#v1.7.3"
+    "nedb": "github:olitvin/nedb#v1.7.4"
   }
 }
