@@ -1,6 +1,6 @@
 /*
   ng-nedb - v0.0.3 
-  2018-05-22
+  2018-05-23
 */
 
 (function() {
@@ -5325,6 +5325,24 @@
                 return res;
             }
             if (typeof obj === "object") {
+                var toString = Object.prototype.toString;
+                switch (toString.call(obj)) {
+                  case "[object Blob]":
+                  case "[object ArrayBuffer]":
+                  case "[object Int8Array]":
+                  case "[object Uint8Array]":
+                  case "[object Uint8ClampedArray]":
+                  case "[object Int16Array]":
+                  case "[object Uint16Array]":
+                  case "[object Int32Array]":
+                  case "[object Uint32Array]":
+                  case "[object Float32Array]":
+                  case "[object Float64Array]":
+                    {
+                        return obj;
+                    }
+                    break;
+                }
                 res = {};
                 Object.keys(obj).forEach(function(k) {
                     if (!strictKeys || k[0] !== "$" && k.indexOf(".") === -1) {

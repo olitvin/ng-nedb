@@ -1,6 +1,6 @@
 {
   "name": "ng-nedb",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "authors": [
     "Oleg Litvin <olitvin@zuzex.com>"
   ],
@@ -17,7 +17,7 @@
     "tests"
   ],
   "dependencies": {
-    "nedb": "olitvin/nedb#v1.7.1"
+    "nedb": "olitvin/nedb#v1.7.3"
   },
   "description": "module for use nedb library"
 }
