@@ -1,5 +1,5 @@
 /*
-  ng-nedb - v0.0.7 
+  ng-nedb - v0.0.8 
   2018-05-24
 */
 
@@ -4239,7 +4239,6 @@
             name: "NeDB",
             storeName: "nedbdata"
         });
-        var noSerialize = false;
         function exists(filename, callback) {
             localforage.getItem(filename, function(err, value) {
                 if (value !== null) {
@@ -4277,40 +4276,35 @@
                 callback = options;
             }
             localforage.getItem(filename, function(err, contents) {
-                if (noSerialize) {
-                    contents = contents || [];
-                    if (contents.length && options && options.indexes) {
-                        var keys = Object.keys(options.indexes);
-                        var values = {};
-                        toAppend.forEach(function(val) {
-                            keys.forEach(function(key) {
-                                if (!values[key]) {
-                                    values[key] = [];
-                                }
-                                values[key].push(val[key]);
-                            });
-                        });
-                        contents = contents.filter(function(value) {
-                            if (!value) {
-                                return false;
+                contents = contents || [];
+                if (contents.length && options && options.indexes) {
+                    var keys = Object.keys(options.indexes);
+                    var values = {};
+                    toAppend.forEach(function(val) {
+                        keys.forEach(function(key) {
+                            if (!values[key]) {
+                                values[key] = [];
                             }
-                            var detected = false;
-                            keys.some(function(key) {
-                                if (values[key].indexOf(value[key]) != -1) {
-                                    detected = true;
-                                    return true;
-                                }
-                            });
-                            if (!detected) {
+                            values[key].push(val[key]);
+                        });
+                    });
+                    contents = contents.filter(function(value) {
+                        if (!value) {
+                            return false;
+                        }
+                        var detected = false;
+                        keys.some(function(key) {
+                            if (values[key].indexOf(value[key]) != -1) {
+                                detected = true;
                                 return true;
                             }
                         });
-                    }
-                    contents = contents.concat(toAppend);
-                } else {
-                    contents = contents || "";
-                    contents += toAppend;
+                        if (!detected) {
+                            return true;
+                        }
+                    });
                 }
+                contents = contents.concat(toAppend);
                 localforage.setItem(filename, contents, function() {
                     return callback();
                 });
@@ -4335,9 +4329,6 @@
         function ensureDatafileIntegrity(filename, callback) {
             return callback(null);
         }
-        function setNoSerialize(status) {
-            noSerialize = status;
-        }
         module.exports.exists = exists;
         module.exports.rename = rename;
         module.exports.writeFile = writeFile;
@@ -4348,7 +4339,6 @@
         module.exports.mkdirp = mkdirp;
         module.exports.ensureDatafileIntegrity = ensureDatafileIntegrity;
         module.exports.forage = localforage;
-        module.exports.setNoSerialize = setNoSerialize;
     }, {
         localforage: 7
     } ],
@@ -5307,37 +5297,10 @@
             }
         }
         function serialize(obj) {
-            var res;
-            res = JSON.stringify(obj, function(k, v) {
-                checkKey(k, v);
-                if (v === undefined) {
-                    return undefined;
-                }
-                if (v === null) {
-                    return null;
-                }
-                if (typeof this[k].getTime === "function") {
-                    return {
-                        $$date: this[k].getTime()
-                    };
-                }
-                return v;
-            });
-            return res;
+            return obj;
         }
         function deserialize(rawData) {
-            return JSON.parse(rawData, function(k, v) {
-                if (k === "$$date") {
-                    return new Date(v);
-                }
-                if (typeof v === "string" || typeof v === "number" || typeof v === "boolean" || v === null) {
-                    return v;
-                }
-                if (v && v.$$date) {
-                    return v.$$date;
-                }
-                return v;
-            });
+            return rawData;
         }
         function deepCopy(obj, strictKeys) {
             var res;
@@ -5942,22 +5905,6 @@
     16: [ function(require, module, exports) {
         (function(process) {
             var storage = require("./storage"), path = require("path"), model = require("./model"), async = require("async"), customUtils = require("./customUtils"), Index = require("./indexes");
-            if (storage.forage && storage.forage.supports("asyncStorage")) {
-                model.serialize = function(d) {
-                    return d;
-                };
-                oldDeserialize = model.deserialize;
-                model.deserialize = function(d) {
-                    if (typeof d == "string") {
-                        return oldDeserialize(d);
-                    }
-                    return d;
-                };
-                if (storage) {
-                    model.noSerialize = true;
-                    storage.setNoSerialize(true);
-                }
-            }
             function Persistence(options) {
                 var i, j, randomString;
                 this.db = options.db;
@@ -6039,20 +5986,13 @@
                 return path.join(home, "nedb-data", relativeFilename);
             };
             Persistence.prototype.addToPersist = function(persist, data) {
-                if (model.noSerialize) {
-                    persist.push(data);
-                } else {
-                    persist += data + "\n";
-                }
+                persist.push(data);
                 return persist;
             };
             Persistence.prototype.persistCachedDatabase = function(cb) {
-                var callback = cb || function() {}, toPersist = "", self = this;
+                var callback = cb || function() {}, toPersist = [], self = this;
                 if (this.inMemoryOnly) {
                     return callback(null);
-                }
-                if (!!model.noSerialize) {
-                    toPersist = [];
                 }
                 this.db.getAllData().forEach(function(doc) {
                     toPersist = self.addToPersist(toPersist, self.afterSerialization(model.serialize(doc)));
@@ -6096,12 +6036,9 @@
                 }
             };
             Persistence.prototype.persistNewState = function(newDocs, cb) {
-                var self = this, toPersist = "", callback = cb || function() {};
+                var self = this, toPersist = [], callback = cb || function() {};
                 if (self.inMemoryOnly) {
                     return callback(null);
-                }
-                if (!!model.noSerialize) {
-                    toPersist = [];
                 }
                 newDocs.forEach(function(doc) {
                     toPersist = self.addToPersist(toPersist, self.afterSerialization(model.serialize(doc)));
@@ -6116,20 +6053,8 @@
                     return callback(err);
                 });
             };
-            Persistence.prototype.split = function(data) {
-                if (model.noSerialize) {
-                    if (typeof data == "string") {
-                        return data.split("\n");
-                    }
-                    return data;
-                }
-                if (typeof data == "string") {
-                    return data.split("\n");
-                }
-                return data;
-            };
             Persistence.prototype.treatRawData = function(rawData) {
-                var data = this.split(rawData), dataById = {}, tdata = [], i, indexes = {}, corruptItems = -1;
+                var data = rawData, dataById = {}, tdata = [], i, indexes = {}, corruptItems = -1;
                 for (i = 0; i < data.length; i += 1) {
                     var doc;
                     try {
