@@ -1,6 +1,6 @@
 /*
-  ng-nedb - v0.0.5 
-  2018-05-23
+  ng-nedb - v0.0.7 
+  2018-05-24
 */
 
 (function() {
@@ -5355,6 +5355,22 @@
                 var toString = Object.prototype.toString;
                 switch (toString.call(obj)) {
                   case "[object Blob]":
+                    {
+                        return new Blob([ obj ], {
+                            type: obj.type,
+                            size: obj.size
+                        });
+                    }
+                    break;
+
+                  case "[object File]":
+                    {
+                        return new File([ obj ], obj.name, {
+                            type: obj.type,
+                            size: obj.size
+                        });
+                    }
+
                   case "[object ArrayBuffer]":
                   case "[object Int8Array]":
                   case "[object Uint8Array]":
@@ -5378,7 +5394,7 @@
                 });
                 return res;
             }
-            return undefined;
+            return obj;
         }
         function isPrimitiveType(obj) {
             return typeof obj === "boolean" || typeof obj === "number" || typeof obj === "string" || obj === null || util.isDate(obj) || util.isArray(obj);
